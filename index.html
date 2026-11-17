@@ -8,7 +8,7 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --border-color: rgba(0, 0, 0, 0.08);
+            --border-color: rgba(0, 0, 0, 0.06);
             --hover-bg: rgba(0, 0, 0, 0.04);
             --active-bg: rgba(0, 0, 0, 0.08);
             --radius: 20px;
@@ -40,13 +40,13 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -1;
-            pointer-events: none; /* Пропускает клики сквозь себя */
+            pointer-events: none;
         }
 
         /* Левитация (дыхание) элементов */
         @keyframes levitate {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-4px); }
             100% { transform: translateY(0px); }
         }
 
@@ -67,9 +67,9 @@
             font-size: 22px;
             font-weight: 700;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
         }
 
@@ -81,9 +81,9 @@
             padding: 12px 10px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
         }
 
@@ -111,10 +111,9 @@
             background: var(--hover-bg);
         }
 
-        /* Отключение левитации при клике */
         .nav-btn:active, .btn:active, .action-btn:active, .sub-tab:active {
             animation: none !important;
-            transform: scale(0.93) !important;
+            transform: scale(0.95) !important;
         }
         .fab:active {
             animation: none !important;
@@ -136,44 +135,54 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Поле поиска */
+        /* Поле поиска - полупрозрачное и левитирующее */
         .search-container {
             margin-bottom: 16px;
             display: none;
+            animation: levitate 3.5s ease-in-out infinite alternate 0.5s;
         }
 
         .search-input {
             width: 100%;
             padding: 12px 16px 12px 42px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 16px;
             font-size: 15px;
-            background-color: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             color: var(--text-color);
             transition: all var(--transition);
             outline: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: 14px center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
         }
 
         .search-input:focus {
-            border-color: rgba(0, 0, 0, 0.3);
-            background-color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Карточки */
+        /* Карточки - полупрозрачные и левитирующие в разнобой */
         .card {
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: var(--radius);
             padding: 18px;
             margin-bottom: 16px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
             word-wrap: break-word;
+        }
+        
+        .card:nth-child(odd) {
+            animation: levitate 4.2s ease-in-out infinite alternate;
+        }
+        .card:nth-child(even) {
+            animation: levitate 3.8s ease-in-out infinite alternate 1s;
         }
 
         .card-header {
@@ -216,11 +225,10 @@
             flex-shrink: 0;
         }
 
-        /* Полупрозрачные левитирующие кнопки действий */
+        /* Кнопки внутри карточки (без левитации) */
         .action-btn {
-            background: rgba(0, 0, 0, 0.04);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255,255,255,0.3);
             color: var(--text-color);
             cursor: pointer;
             padding: 8px;
@@ -228,8 +236,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s ease;
-            animation: levitate 3.5s ease-in-out infinite alternate;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .action-btn:active {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         /* Плавное сворачивание */
@@ -252,16 +263,16 @@
             line-height: 1.5;
         }
 
-        /* Плавающая кнопка (+) с левитацией и полупрозрачностью */
+        /* Плавающая кнопка (+) */
         .fab {
             position: fixed;
             bottom: calc(90px + env(safe-area-inset-bottom, 0px));
             right: 20px;
             width: 60px;
             height: 60px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: var(--bg-color);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50%;
@@ -289,11 +300,11 @@
         }
         .sub-tab {
             padding: 10px 18px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 24px;
             white-space: nowrap;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
@@ -304,7 +315,7 @@
             animation-delay: 0.5s;
         }
         .sub-tab.active {
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.75);
             color: var(--bg-color);
             border-color: transparent;
         }
@@ -322,25 +333,28 @@
             font-weight: 700;
         }
 
+        /* Пустое состояние (полупрозрачное левитирующее) */
         .empty-state {
             text-align: center;
             color: #777;
             margin-top: 40px;
             font-size: 15px;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 20px;
             border-radius: var(--radius);
-            border: 1px dashed rgba(0,0,0,0.15);
+            border: 1px dashed rgba(0,0,0,0.1);
+            animation: levitate 4s ease-in-out infinite alternate 0.2s;
         }
 
         /* Модальные окна */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -353,14 +367,17 @@
             opacity: 1;
         }
         .modal {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.4);
             width: 90%;
             max-width: 400px;
             border-radius: 28px;
             padding: 24px;
             transform: scale(0.95) translateY(10px);
             transition: transform var(--transition);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
         .modal-overlay.active .modal {
             transform: scale(1) translateY(0);
@@ -373,13 +390,13 @@
         }
         .modal input, .modal textarea {
             width: 100%;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.08);
             border-radius: 16px;
             padding: 14px;
             font-size: 16px;
             margin-bottom: 15px;
             outline: none;
-            background: rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.6);
             color: var(--text-color);
             transition: border 0.2s ease;
             -webkit-appearance: none;
@@ -398,8 +415,6 @@
             gap: 12px;
             margin-top: 5px;
         }
-        
-        /* Кнопки модалок (левитирующие полупрозрачные) */
         .btn {
             flex: 1;
             padding: 14px;
@@ -410,14 +425,14 @@
             font-weight: 600;
             backdrop-filter: blur(8px);
             transition: background 0.2s ease;
-            animation: levitate 4s ease-in-out infinite alternate;
         }
         .btn-cancel {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0,0,0,0.05);
             color: var(--text-color);
         }
         .btn-save {
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.75);
             color: var(--bg-color);
         }
     </style>
@@ -471,7 +486,7 @@
     </div>
 
     <script>
-        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ (CANVAS) ---
+        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ (МЯГКАЯ И ЕДВА ЗАМЕТНАЯ) ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -488,16 +503,14 @@
             canvas.width = width * dpr;
             canvas.height = height * dpr;
             ctx.scale(dpr, dpr);
-            drawGrid(); // Рисуем статичную сетку сразу
+            drawGrid(); // Рисуем статичную сетку
         }
         window.addEventListener('resize', resizeCanvas);
 
-        // Функция создания волны
         function createRipple(e) {
             let x = e.clientX;
             let y = e.clientY;
             
-            // Поддержка касаний (Touch)
             if (e.touches && e.touches.length > 0) {
                 x = e.touches[0].clientX;
                 y = e.touches[0].clientY;
@@ -508,7 +521,7 @@
                 y: y,
                 radius: 0,
                 maxRadius: Math.max(width, height) * 1.2,
-                speed: 12
+                speed: 10
             });
 
             if (!isAnimating) {
@@ -517,7 +530,7 @@
             }
         }
 
-        // ВАЖНО: Используем capture: true, чтобы перехватить клик ДО того, как кнопки вызовут stopPropagation()
+        // Перехват кликов ДО UI-элементов
         document.addEventListener('mousedown', createRipple, true);
         document.addEventListener('touchstart', createRipple, { passive: true, capture: true });
 
@@ -534,11 +547,10 @@
                     
                     let intensity = 0;
                     
-                    // Просчет пересечения точки с активными волнами
                     for (const r of ripples) {
                         const dist = Math.hypot(x - r.x, y - r.y);
                         const diff = Math.abs(dist - r.radius);
-                        const waveWidth = 70; // Ширина кольца волны
+                        const waveWidth = 80; 
                         
                         if (diff < waveWidth) {
                             intensity += (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
@@ -547,9 +559,9 @@
                     
                     intensity = Math.min(1, intensity);
                     
-                    // Если волна проходит по точке, увеличиваем радиус и делаем цвет чернее
-                    const dotRadius = baseRadius + (intensity * 2.5); 
-                    const alpha = 0.05 + (intensity * 0.8);
+                    // МЕНЕЕ заметная волна: точки почти не растут, цвет становится лишь серым
+                    const dotRadius = baseRadius + (intensity * 0.8); 
+                    const alpha = 0.04 + (intensity * 0.12); // Едва заметный серый пульс
                     
                     ctx.beginPath();
                     ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -560,7 +572,6 @@
         }
 
         function renderLoop() {
-            // Обновляем радиусы всех волн
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].radius += ripples[i].speed;
                 if (ripples[i].radius > ripples[i].maxRadius) {
@@ -570,7 +581,6 @@
 
             drawGrid();
 
-            // Если волны еще есть, продолжаем анимацию
             if (ripples.length > 0) {
                 requestAnimationFrame(renderLoop);
             } else {
@@ -578,7 +588,6 @@
             }
         }
         
-        // Инициализация холста
         resizeCanvas();
 
 
