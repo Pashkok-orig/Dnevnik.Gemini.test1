@@ -26,37 +26,45 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            /* Отступы, чтобы контент не залезал под фиксированные панели */
+            padding-top: 70px;
+            padding-bottom: 90px;
         }
 
+        /* Фиксированный заголовок сверху */
         header {
-            padding: 20px;
-            text-align: center;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 22px;
             font-weight: 700;
             border-bottom: 1px solid var(--border-color);
-            background: var(--bg-color);
-            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        /* Фиксированная панель навигации снизу */
+        nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 10px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            border-top: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
         }
 
         main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 20px 100px 20px;
-            scroll-behavior: smooth;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 10px;
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-color);
-            padding-bottom: env(safe-area-inset-bottom, 15px);
-            z-index: 10;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .nav-btn {
@@ -186,7 +194,7 @@
 
         .fab {
             position: fixed;
-            bottom: 90px;
+            bottom: calc(90px + env(safe-area-inset-bottom, 0px));
             right: 20px;
             width: 56px;
             height: 56px;
@@ -202,7 +210,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             cursor: pointer;
             transition: transform 0.2s ease;
-            z-index: 100;
+            z-index: 999;
         }
 
         .fab:active {
@@ -253,11 +261,11 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(3px);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 2000;
             opacity: 0;
             transition: opacity var(--transition);
         }
@@ -275,7 +283,7 @@
             padding: 24px;
             transform: scale(0.95) translateY(10px);
             transition: transform var(--transition);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
         .modal-overlay.active .modal {
@@ -401,7 +409,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация данных
             let data = JSON.parse(localStorage.getItem('diaryAppData')) || {
                 days: [],
                 termsCategories: [],
@@ -432,14 +439,14 @@
                 });
             });
 
-            // Вспомогательная функция для получения текущей даты
+            // Авто-дата
             function getTodayString() {
                 const options = { day: 'numeric', month: 'long', weekday: 'long' };
                 let dateStr = new Intl.DateTimeFormat('ru-RU', options).format(new Date());
                 return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
             }
 
-            // Модальное окно (основное)
+            // Модальное окно (создание/редактирование)
             const modal = document.getElementById('modal');
             const modalTitle = document.getElementById('modal-title');
             const inputTitle = document.getElementById('modal-input-title');
@@ -489,7 +496,7 @@
                 }
             };
 
-            // Модальное окно для вкладок терминов
+            // Модальное окно управления вкладками терминов
             const actionModal = document.getElementById('action-modal');
             document.getElementById('btn-cancel-action').onclick = () => actionModal.classList.remove('active');
 
@@ -594,7 +601,6 @@
                     bodyWrapper.appendChild(bodyContent);
                     card.appendChild(bodyWrapper);
 
-                    // Логика сворачивания
                     titleWrapper.onclick = () => {
                         chevron.classList.toggle('active');
                         bodyWrapper.classList.toggle('open');
@@ -667,7 +673,6 @@
                 }
             }
 
-            // Запуск
             render();
         });
     </script>
