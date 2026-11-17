@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Дневник</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --border-color: #e0e0e0;
+            --hover-bg: #f5f5f5;
+            --active-bg: #e5e5e5;
+            --radius: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-color);
+            z-index: 10;
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 20px 100px 20px;
+            scroll-behavior: smooth;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 10px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-color);
+            padding-bottom: env(safe-area-inset-bottom, 15px);
+            z-index: 10;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #888;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: color var(--transition), background var(--transition), transform 0.15s ease;
+        }
+
+        .nav-btn.active {
+            color: var(--text-color);
+            background: var(--hover-bg);
+        }
+
+        .nav-btn:active, .btn:active, .action-btn:active, .sub-tab:active {
+            transform: scale(0.95);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Карточки */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            background: var(--bg-color);
+            word-wrap: break-word;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 17px;
+            line-height: 1.4;
+        }
+
+        .chevron {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            transition: transform var(--transition);
+        }
+
+        .chevron.active {
+            transform: rotate(180deg);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            background: var(--hover-bg);
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .action-btn:active {
+            background: var(--active-bg);
+        }
+
+        /* Плавное сворачивание контента */
+        .card-body-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows var(--transition);
+        }
+
+        .card-body-wrapper.open {
+            grid-template-rows: 1fr;
+        }
+
+        .card-body-content {
+            overflow: hidden;
+        }
+
+        .card-text {
+            padding-top: 12px;
+            white-space: pre-wrap;
+            color: #444;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--text-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 50%;
+            font-size: 28px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            z-index: 100;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        /* Подкатегории для терминов */
+        .sub-tabs-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 5px 0 20px 0;
+            margin-bottom: 5px;
+            scrollbar-width: none;
+        }
+        
+        .sub-tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sub-tab {
+            padding: 10px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            white-space: nowrap;
+            background: var(--bg-color);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sub-tab.active {
+            background: var(--text-color);
+            color: var(--bg-color);
+            border-color: var(--text-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            margin-top: 40px;
+            font-size: 15px;
+        }
+
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal {
+            background: var(--bg-color);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 28px;
+            padding: 24px;
+            transform: scale(0.95) translateY(10px);
+            transition: transform var(--transition);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .modal input, .modal textarea {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            outline: none;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: border 0.2s ease;
+            -webkit-appearance: none;
+        }
+
+        .modal input:focus, .modal textarea:focus {
+            border-color: var(--text-color);
+        }
+
+        .modal textarea {
+            resize: none;
+            height: 120px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .btn-cancel {
+            background: var(--hover-bg);
+            color: var(--text-color);
+        }
+
+        .btn-save {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+        
+        .btn-delete {
+            background: var(--hover-bg);
+            color: #000;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header id="header-title">Дни</header>
+
+    <main>
+        <div id="days-section" class="section active">
+            <div id="days-list"></div>
+        </div>
+
+        <div id="terms-section" class="section">
+            <div class="sub-tabs-container" id="terms-subtabs"></div>
+            <div id="terms-list"></div>
+        </div>
+
+        <div id="plans-section" class="section">
+            <div id="plans-list"></div>
+        </div>
+    </main>
+
+    <button class="fab" id="fab-btn">+</button>
+
+    <!-- Модальное окно для создания/редактирования записей -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h3 id="modal-title">Создать</h3>
+            <input type="text" id="modal-input-title" placeholder="Заголовок" autocomplete="off">
+            <textarea id="modal-input-desc" placeholder="Описание..."></textarea>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" id="btn-cancel">Отмена</button>
+                <button class="btn btn-save" id="btn-save">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для управления вкладками терминов -->
+    <div class="modal-overlay" id="action-modal">
+        <div class="modal">
+            <h3 id="action-modal-title">Управление вкладкой</h3>
+            <div class="modal-actions" style="flex-direction: column;">
+                <button class="btn btn-save" id="btn-edit-subtab">Переименовать</button>
+                <button class="btn btn-delete" id="btn-delete-subtab">Удалить вкладку</button>
+                <button class="btn btn-cancel" id="btn-cancel-action">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация данных
+        let data = JSON.parse(localStorage.getItem('diaryAppData')) || {
+            days: [],
+            termsCategories: [],
+            terms: [],
+            plans: []
+        };
+
+        function saveData() {
+            localStorage.setItem('diaryAppData', JSON.stringify(data));
+        }
+
+        let currentSection = 'days-section';
+        let activeCategoryId = data.termsCategories.length > 0 ? data.termsCategories[0].id : null;
+
+        // Навигация
+        const tabs = document.querySelectorAll('.nav-btn');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(tab.dataset.target).classList.add('active');
+                
+                document.getElementById('header-title').innerText = tab.dataset.title;
+                currentSection = tab.dataset.target;
+                render();
+            });
+        });
+
+        // Вспомогательная функция для получения текущей даты
+        function getTodayString() {
+            const options = { day: 'numeric', month: 'long', weekday: 'long' };
+            let dateStr = new Intl.DateTimeFormat('ru-RU', options).format(new Date());
+            return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        }
+
+        // Модальное окно (основное)
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const inputTitle = document.getElementById('modal-input-title');
+        const inputDesc = document.getElementById('modal-input-desc');
+        let saveCallback = null;
+
+        function openModal(title, isCategory, defaultTitle = '', defaultDesc = '', callback) {
+            modalTitle.innerText = title;
+            inputTitle.value = defaultTitle;
+            inputDesc.value = defaultDesc;
+            inputDesc.style.display = isCategory ? 'none' : 'block';
+            
+            modal.classList.add('active');
+            inputTitle.focus();
+            saveCallback = callback;
+        }
+
+        document.getElementById('btn-cancel').onclick = () => modal.classList.remove('active');
+        document.getElementById('btn-save').onclick = () => {
+            const title = inputTitle.value.trim();
+            if (!title) return;
+            saveCallback(title, inputDesc.value.trim());
+            modal.classList.remove('active');
+        };
+
+        // Главная кнопка (+)
+        document.getElementById('fab-btn').onclick = () => {
+            if (currentSection === 'days-section') {
+                openModal('Новый день', false, getTodayString(), '', (title, desc) => {
+                    data.days.unshift({ id: Date.now(), title, desc });
+                    saveData(); render();
+                });
+            } else if (currentSection === 'terms-section') {
+                if (!activeCategoryId) {
+                    alert('Сначала создайте вкладку для терминов');
+                    return;
+                }
+                openModal('Новый термин', false, '', '', (title, desc) => {
+                    data.terms.unshift({ id: Date.now(), categoryId: activeCategoryId, title, desc });
+                    saveData(); render();
+                });
+            } else if (currentSection === 'plans-section') {
+                openModal('Новый план', false, '', '', (title, desc) => {
+                    data.plans.unshift({ id: Date.now(), title, desc });
+                    saveData(); render();
+                });
+            }
+        };
+
+        // Модальное окно для вкладок терминов
+        const actionModal = document.getElementById('action-modal');
+        document.getElementById('btn-cancel-action').onclick = () => actionModal.classList.remove('active');
+
+        function openActionModal(category) {
+            document.getElementById('action-modal-title').innerText = category.title;
+            actionModal.classList.add('active');
+            
+            document.getElementById('btn-edit-subtab').onclick = () => {
+                actionModal.classList.remove('active');
+                openModal('Переименовать', true, category.title, '', (newTitle) => {
+                    category.title = newTitle;
+                    saveData(); render();
+                });
+            };
+            
+            document.getElementById('btn-delete-subtab').onclick = () => {
+                if (confirm('Точно удалить вкладку и все термины в ней?')) {
+                    data.termsCategories = data.termsCategories.filter(c => c.id !== category.id);
+                    data.terms = data.terms.filter(t => t.categoryId !== category.id);
+                    if (activeCategoryId === category.id) {
+                        activeCategoryId = data.termsCategories.length > 0 ? data.termsCategories[0].id : null;
+                    }
+                    saveData(); render();
+                    actionModal.classList.remove('active');
+                }
+            };
+        }
+
+        // SVG Иконки
+        const iconEdit = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+        const iconDelete = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+        const iconChevron = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+        // Рендер карточек
+        function createCard(item, type) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            
+            const titleWrapper = document.createElement('div');
+            titleWrapper.className = 'card-title-wrapper';
+
+            let chevron;
+            if (item.desc) {
+                chevron = document.createElement('div');
+                chevron.className = 'chevron active';
+                chevron.innerHTML = iconChevron;
+                titleWrapper.appendChild(chevron);
+            }
+
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            title.innerText = item.title;
+            titleWrapper.appendChild(title);
+            
+            const actions = document.createElement('div');
+            actions.className = 'card-actions';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'action-btn';
+            editBtn.innerHTML = iconEdit;
+            editBtn.onclick = (e) => {
+                e.stopPropagation();
+                openModal('Редактировать', false, item.title, item.desc || '', (newTitle, newDesc) => {
+                    item.title = newTitle;
+                    item.desc = newDesc;
+                    saveData(); render();
+                });
+            };
+            
+            const delBtn = document.createElement('button');
+            delBtn.className = 'action-btn';
+            delBtn.innerHTML = iconDelete;
+            delBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm('Удалить эту запись?')) {
+                    data[type] = data[type].filter(x => x.id !== item.id);
+                    saveData(); render();
+                }
+            };
+            
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+            header.appendChild(titleWrapper);
+            header.appendChild(actions);
+            card.appendChild(header);
+            
+            if (item.desc) {
+                const bodyWrapper = document.createElement('div');
+                bodyWrapper.className = 'card-body-wrapper open';
+                
+                const bodyContent = document.createElement('div');
+                bodyContent.className = 'card-body-content';
+                
+                const bodyText = document.createElement('div');
+                bodyText.className = 'card-text';
+                bodyText.innerText = item.desc;
+                
+                bodyContent.appendChild(bodyText);
+                bodyWrapper.appendChild(bodyContent);
+                card.appendChild(bodyWrapper);
+
+                // Логика сворачивания
+                titleWrapper.onclick = () => {
+                    chevron.classList.toggle('active');
+                    bodyWrapper.classList.toggle('open');
+                };
+            }
+            
+            return card;
+        }
+
+        function renderList(containerId, itemsArray, typeStr, emptyText) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if (itemsArray.length === 0) {
+                container.innerHTML = `<div class="empty-state">${emptyText}</div>`;
+                return;
+            }
+            itemsArray.forEach(item => container.appendChild(createCard(item, typeStr)));
+        }
+
+        // Основной рендер
+        function render() {
+            if (currentSection === 'days-section') {
+                renderList('days-list', data.days, 'days', 'Записей пока нет. Нажми +, чтобы добавить.');
+            } 
+            else if (currentSection === 'plans-section') {
+                renderList('plans-list', data.plans, 'plans', 'Планов пока нет. Нажми +, чтобы добавить.');
+            } 
+            else if (currentSection === 'terms-section') {
+                const subtabs = document.getElementById('terms-subtabs');
+                subtabs.innerHTML = '';
+                
+                const addCatBtn = document.createElement('button');
+                addCatBtn.className = 'sub-tab';
+                addCatBtn.innerText = '+ Вкладка';
+                addCatBtn.onclick = () => {
+                    openModal('Новая вкладка', true, '', '', (title) => {
+                        const newCat = { id: Date.now(), title };
+                        data.termsCategories.push(newCat);
+                        activeCategoryId = newCat.id;
+                        saveData(); render();
+                    });
+                };
+                subtabs.appendChild(addCatBtn);
+                
+                data.termsCategories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = `sub-tab ${cat.id === activeCategoryId ? 'active' : ''}`;
+                    btn.innerText = cat.title;
+                    btn.onclick = () => {
+                        if (cat.id === activeCategoryId) {
+                            openActionModal(cat);
+                        } else {
+                            activeCategoryId = cat.id;
+                            render();
+                        }
+                    };
+                    subtabs.appendChild(btn);
+                });
+                
+                if (!activeCategoryId && data.termsCategories.length > 0) {
+                    activeCategoryId = data.termsCategories[0].id;
+                }
+                
+                if (!activeCategoryId) {
+                    document.getElementById('terms-list').innerHTML = '<div class="empty-state">Создай вкладку, чтобы добавлять термины</div>';
+                } else {
+                    const categoryTerms = data.terms.filter(t => t.categoryId === activeCategoryId);
+                    renderList('terms-list', categoryTerms, 'terms', 'В этой вкладке пока пусто');
+                }
+            }
+        }
+
+        // Запуск
+        render();
+    </script>
+</body>
+</html>
