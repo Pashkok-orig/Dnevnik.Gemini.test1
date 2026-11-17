@@ -43,7 +43,6 @@
             pointer-events: none;
         }
 
-        /* Левитация (дыхание) элементов */
         @keyframes levitate {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-4px); }
@@ -56,7 +55,6 @@
             100% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
         }
 
-        /* Шапка и нижнее меню */
         header {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -71,6 +69,26 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
+        }
+
+        /* Кнопка настроек/бэкапа в шапке */
+        .header-btn {
+            position: absolute;
+            left: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+        .header-btn:active {
+            background: var(--hover-bg);
+            transform: scale(0.9);
         }
 
         nav {
@@ -135,7 +153,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Поле поиска - полупрозрачное и левитирующее */
         .search-container {
             margin-bottom: 16px;
             display: none;
@@ -150,7 +167,6 @@
             font-size: 15px;
             background-color: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             color: var(--text-color);
             transition: all var(--transition);
             outline: none;
@@ -165,7 +181,6 @@
             background-color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Карточки - полупрозрачные и левитирующие в разнобой */
         .card {
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: var(--radius);
@@ -173,7 +188,6 @@
             margin-bottom: 16px;
             background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
             word-wrap: break-word;
         }
@@ -225,7 +239,6 @@
             flex-shrink: 0;
         }
 
-        /* Кнопки внутри карточки (без левитации) */
         .action-btn {
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid rgba(255,255,255,0.3);
@@ -243,7 +256,6 @@
             background: rgba(0, 0, 0, 0.05);
         }
 
-        /* Плавное сворачивание */
         .card-body-wrapper {
             display: grid;
             grid-template-rows: 0fr;
@@ -263,7 +275,12 @@
             line-height: 1.5;
         }
 
-        /* Плавающая кнопка (+) */
+        /* Корректный рендер HTML в старых записях */
+        .card-text p, .card-text div {
+            margin: 0; 
+            padding: 0;
+        }
+
         .fab {
             position: fixed;
             bottom: calc(90px + env(safe-area-inset-bottom, 0px));
@@ -272,7 +289,6 @@
             height: 60px;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             color: var(--bg-color);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50%;
@@ -287,7 +303,6 @@
             animation: levitate-fab 4s ease-in-out infinite alternate;
         }
 
-        /* Вкладки терминов (левитирующие) */
         .sub-tabs-container {
             display: flex;
             gap: 12px;
@@ -333,7 +348,6 @@
             font-weight: 700;
         }
 
-        /* Пустое состояние (полупрозрачное левитирующее) */
         .empty-state {
             text-align: center;
             color: #777;
@@ -341,20 +355,17 @@
             font-size: 15px;
             background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             padding: 20px;
             border-radius: var(--radius);
             border: 1px dashed rgba(0,0,0,0.1);
             animation: levitate 4s ease-in-out infinite alternate 0.2s;
         }
 
-        /* Модальные окна */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.25);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -369,7 +380,6 @@
         .modal {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255,255,255,0.4);
             width: 90%;
             max-width: 400px;
@@ -378,12 +388,15 @@
             transform: scale(0.95) translateY(10px);
             transition: transform var(--transition);
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .modal-overlay.active .modal {
             transform: scale(1) translateY(0);
         }
         .modal h3 {
-            margin-bottom: 20px;
+            margin: 0;
             font-size: 18px;
             text-align: center;
             font-weight: 600;
@@ -394,7 +407,6 @@
             border-radius: 16px;
             padding: 14px;
             font-size: 16px;
-            margin-bottom: 15px;
             outline: none;
             background: rgba(255,255,255,0.6);
             color: var(--text-color);
@@ -413,8 +425,25 @@
             display: flex;
             justify-content: space-between;
             gap: 12px;
-            margin-top: 5px;
         }
+        
+        /* Кнопка загрузки файла в модалке */
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+        }
+
         .btn {
             flex: 1;
             padding: 14px;
@@ -425,6 +454,7 @@
             font-weight: 600;
             backdrop-filter: blur(8px);
             transition: background 0.2s ease;
+            text-align: center;
         }
         .btn-cancel {
             background: rgba(255, 255, 255, 0.6);
@@ -439,10 +469,14 @@
 </head>
 <body>
     
-    <!-- Интерактивный фоновый холст для ряби -->
     <canvas id="bg-canvas"></canvas>
 
-    <header id="header-title">Дни</header>
+    <header>
+        <button class="header-btn" id="btn-settings" title="Бэкап данных">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+        <span id="header-title">Дни</span>
+    </header>
 
     <main>
         <div id="days-section" class="section active">
@@ -452,11 +486,9 @@
         <div id="terms-section" class="section">
             <div class="sub-tabs-container" id="terms-subtabs"></div>
             <div id="category-management-container"></div>
-            
             <div class="search-container" id="terms-search-container">
                 <input type="text" class="search-input" id="terms-search" placeholder="Поиск терминов..." autocomplete="off">
             </div>
-            
             <div id="terms-list"></div>
         </div>
 
@@ -473,6 +505,7 @@
         <button class="nav-btn" data-target="plans-section" data-title="Планы">Планы</button>
     </nav>
 
+    <!-- Основное модальное окно -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3 id="modal-title">Создать</h3>
@@ -485,16 +518,29 @@
         </div>
     </div>
 
+    <!-- Модальное окно резервного копирования -->
+    <div class="modal-overlay" id="backup-modal">
+        <div class="modal">
+            <h3>Резервная копия</h3>
+            <button class="btn btn-save" id="btn-export" style="width: 100%;">Скачать данные (JSON)</button>
+            <div class="file-upload-wrapper">
+                <button class="btn btn-cancel" style="width: 100%;">Загрузить из файла</button>
+                <input type="file" id="file-import" accept=".json">
+            </div>
+            <button class="btn btn-cancel" id="btn-close-backup" style="margin-top: 10px; background: transparent; border: none; font-size: 14px;">Закрыть</button>
+        </div>
+    </div>
+
     <script>
-        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ (СВЕРХ-МЯГКАЯ) ---
+        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let ripples = [];
         let isAnimating = false;
 
-        const spacing = 22; // Расстояние между точками
-        const baseRadius = 1.2; // Базовый размер
+        const spacing = 22; 
+        const baseRadius = 1.2; 
 
         function resizeCanvas() {
             width = window.innerWidth;
@@ -517,11 +563,9 @@
             }
 
             ripples.push({
-                x: x,
-                y: y,
-                radius: 0,
+                x: x, y: y, radius: 0,
                 maxRadius: Math.max(width, height) * 1.2,
-                speed: 7 // Более плавная и спокойная волна
+                speed: 7 
             });
 
             if (!isAnimating) {
@@ -535,7 +579,6 @@
 
         function drawGrid() {
             ctx.clearRect(0, 0, width, height);
-
             const cols = Math.ceil(width / spacing);
             const rows = Math.ceil(height / spacing);
 
@@ -543,13 +586,12 @@
                 for (let j = 0; j <= rows; j++) {
                     const x = i * spacing;
                     const y = j * spacing;
-                    
                     let intensity = 0;
                     
                     for (const r of ripples) {
                         const dist = Math.hypot(x - r.x, y - r.y);
                         const diff = Math.abs(dist - r.radius);
-                        const waveWidth = 100; // Широкое и мягкое затухание
+                        const waveWidth = 100; 
                         
                         if (diff < waveWidth) {
                             intensity += (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
@@ -557,9 +599,6 @@
                     }
                     
                     intensity = Math.min(1, intensity);
-                    
-                    // ЭЛЕГАНТНАЯ МАТЕМАТИКА ЦВЕТА:
-                    // Рост максимум на 0.3 пикселя, прозрачность поднимается с 5% лишь до 9%
                     const dotRadius = baseRadius + (intensity * 0.3); 
                     const alpha = 0.05 + (intensity * 0.04);
                     
@@ -578,20 +617,17 @@
                     ripples.splice(i, 1);
                 }
             }
-
             drawGrid();
-
             if (ripples.length > 0) {
                 requestAnimationFrame(renderLoop);
             } else {
                 isAnimating = false;
             }
         }
-        
         resizeCanvas();
 
 
-        // --- ЛОГИКА ПРИЛОЖЕНИЯ (ДНЕВНИК) ---
+        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
         document.addEventListener('DOMContentLoaded', () => {
             let data = JSON.parse(localStorage.getItem('diaryAppData')) || {
                 days: [],
@@ -634,6 +670,7 @@
                 return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
             }
 
+            // Модалки
             const modal = document.getElementById('modal');
             const modalTitle = document.getElementById('modal-title');
             const inputTitle = document.getElementById('modal-input-title');
@@ -645,7 +682,6 @@
                 inputTitle.value = defaultTitle;
                 inputDesc.value = defaultDesc;
                 inputDesc.style.display = isCategory ? 'none' : 'block';
-                
                 modal.classList.add('active');
                 inputTitle.focus();
                 saveCallback = callback;
@@ -682,6 +718,103 @@
                 }
             };
 
+            // БЭКАП ЛОГИКА (Экспорт и Импорт)
+            const backupModal = document.getElementById('backup-modal');
+            const btnSettings = document.getElementById('btn-settings');
+            const btnCloseBackup = document.getElementById('btn-close-backup');
+            const btnExport = document.getElementById('btn-export');
+            const fileImport = document.getElementById('file-import');
+
+            btnSettings.onclick = () => backupModal.classList.add('active');
+            btnCloseBackup.onclick = () => backupModal.classList.remove('active');
+
+            btnExport.onclick = () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                const date = new Date().toISOString().split('T')[0];
+                downloadAnchorNode.setAttribute("download", `dnevnik-backup-${date}.json`);
+                document.body.appendChild(downloadAnchorNode); 
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+                backupModal.classList.remove('active');
+            };
+
+            // Умный адаптер для импорта данных (поддерживает старый формат файла)
+            function migrateImportedData(importedJson) {
+                let newData = { days: [], termsCategories: [], terms: [], plans: [] };
+
+                // Парсим дни (в старом формате: date и content)
+                if (importedJson.days) {
+                    importedJson.days.forEach(d => {
+                        newData.days.push({
+                            id: d.id || Date.now() + Math.random(),
+                            title: d.title || d.date || 'Без даты',
+                            desc: (d.content || d.desc || '').replace(/<[^>]*>?/gm, '\n').trim() // Очищаем HTML теги из старых записей
+                        });
+                    });
+                }
+
+                // Парсим планы
+                if (importedJson.plans) {
+                    importedJson.plans.forEach(p => {
+                        newData.plans.push({
+                            id: p.id || Date.now() + Math.random(),
+                            title: p.title || p.date || 'Без заголовка',
+                            desc: p.desc || p.content || ''
+                        });
+                    });
+                }
+
+                // Парсим термины (в старом формате лежат внутри termGroups)
+                if (importedJson.termGroups) {
+                    importedJson.termGroups.forEach(group => {
+                        let catId = group.id || Date.now() + Math.random();
+                        newData.termsCategories.push({ id: catId, title: group.name });
+                        
+                        if (group.terms) {
+                            group.terms.forEach(t => {
+                                newData.terms.push({
+                                    id: t.id || Date.now() + Math.random(),
+                                    categoryId: catId,
+                                    title: t.term || t.title,
+                                    desc: t.def || t.desc || ''
+                                });
+                            });
+                        }
+                    });
+                } else if (importedJson.termsCategories) {
+                    // Если это бэкап от новой версии
+                    newData.termsCategories = importedJson.termsCategories;
+                    newData.terms = importedJson.terms || [];
+                }
+
+                return newData;
+            }
+
+            fileImport.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        data = migrateImportedData(parsed);
+                        saveData();
+                        activeCategoryId = data.termsCategories.length > 0 ? data.termsCategories[0].id : null;
+                        render();
+                        backupModal.classList.remove('active');
+                        alert('Данные успешно загружены!');
+                    } catch (err) {
+                        alert('Ошибка при чтении файла бэкапа.');
+                    }
+                };
+                reader.readAsText(file);
+                // сброс инпута
+                fileImport.value = '';
+            });
+
+            // Иконки
             const iconEdit = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
             const iconDelete = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             const iconChevron = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
@@ -752,7 +885,12 @@
                     bodyContent.className = 'card-body-content';
                     const bodyText = document.createElement('div');
                     bodyText.className = 'card-text';
-                    bodyText.innerText = item.desc;
+                    // Если загрузили старые данные с html тэгами, используем innerHTML с защитой, иначе innerText
+                    if (item.desc.includes('</div>') || item.desc.includes('</p>')) {
+                        bodyText.innerHTML = item.desc;
+                    } else {
+                        bodyText.innerText = item.desc;
+                    }
                     
                     bodyContent.appendChild(bodyText);
                     bodyWrapper.appendChild(bodyContent);
