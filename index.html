@@ -8,9 +8,9 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --hover-bg: rgba(0, 0, 0, 0.05);
-            --active-bg: rgba(0, 0, 0, 0.1);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --hover-bg: rgba(0, 0, 0, 0.04);
+            --active-bg: rgba(0, 0, 0, 0.08);
             --radius: 20px;
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -37,15 +37,26 @@
         /* Интерактивный фоновый холст */
         #bg-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: -1;
             pointer-events: none; /* Пропускает клики сквозь себя */
         }
 
-        /* Шапка со стеклянным эффектом */
+        /* Левитация (дыхание) элементов */
+        @keyframes levitate {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes levitate-fab {
+            0% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+            50% { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(0,0,0,0.25); }
+            100% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        }
+
+        /* Шапка и нижнее меню */
         header {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -56,13 +67,12 @@
             font-size: 22px;
             font-weight: 700;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             z-index: 1000;
         }
 
-        /* Нижнее меню со стеклянным эффектом */
         nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -71,7 +81,7 @@
             padding: 12px 10px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             z-index: 1000;
@@ -101,8 +111,15 @@
             background: var(--hover-bg);
         }
 
+        /* Отключение левитации при клике */
         .nav-btn:active, .btn:active, .action-btn:active, .sub-tab:active {
-            transform: scale(0.95);
+            animation: none !important;
+            transform: scale(0.93) !important;
+        }
+        .fab:active {
+            animation: none !important;
+            transform: scale(0.85) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         }
 
         .section {
@@ -128,33 +145,33 @@
         .search-input {
             width: 100%;
             padding: 12px 16px 12px 42px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 16px;
             font-size: 15px;
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
             color: var(--text-color);
             transition: all var(--transition);
             outline: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: 14px center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
         .search-input:focus {
-            border-color: var(--text-color);
-            background-color: #ffffff;
+            border-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(255, 255, 255, 0.9);
         }
 
         /* Карточки */
         .card {
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             border-radius: var(--radius);
             padding: 18px;
             margin-bottom: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             word-wrap: break-word;
         }
@@ -199,9 +216,11 @@
             flex-shrink: 0;
         }
 
+        /* Полупрозрачные левитирующие кнопки действий */
         .action-btn {
-            background: var(--hover-bg);
-            border: none;
+            background: rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.2);
             color: var(--text-color);
             cursor: pointer;
             padding: 8px;
@@ -210,10 +229,7 @@
             align-items: center;
             justify-content: center;
             transition: background 0.2s ease;
-        }
-
-        .action-btn:active {
-            background: var(--active-bg);
+            animation: levitate 3.5s ease-in-out infinite alternate;
         }
 
         /* Плавное сворачивание */
@@ -236,38 +252,36 @@
             line-height: 1.5;
         }
 
-        /* Плавающая кнопка (+) */
+        /* Плавающая кнопка (+) с левитацией и полупрозрачностью */
         .fab {
             position: fixed;
             bottom: calc(90px + env(safe-area-inset-bottom, 0px));
             right: 20px;
             width: 60px;
             height: 60px;
-            background: var(--text-color);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: var(--bg-color);
-            border: none;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50%;
             font-size: 32px;
             font-weight: 300;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
             cursor: pointer;
             transition: transform 0.2s ease;
             z-index: 999;
+            animation: levitate-fab 4s ease-in-out infinite alternate;
         }
 
-        .fab:active {
-            transform: scale(0.9);
-        }
-
-        /* Вкладки терминов */
+        /* Вкладки терминов (левитирующие) */
         .sub-tabs-container {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             overflow-x: auto;
-            padding: 5px 0 15px 0;
+            padding: 10px 5px 20px 5px;
             scrollbar-width: none;
         }
         .sub-tabs-container::-webkit-scrollbar {
@@ -275,22 +289,26 @@
         }
         .sub-tab {
             padding: 10px 18px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 24px;
             white-space: nowrap;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
             transition: all 0.2s ease;
+            animation: levitate 3s ease-in-out infinite alternate;
+        }
+        .sub-tab:nth-child(even) {
+            animation-delay: 0.5s;
         }
         .sub-tab.active {
-            background: var(--text-color);
+            background: rgba(0, 0, 0, 0.85);
             color: var(--bg-color);
-            border-color: var(--text-color);
+            border-color: transparent;
         }
 
-        /* Управление текущей категорией */
         .category-management {
             display: flex;
             justify-content: space-between;
@@ -309,10 +327,11 @@
             color: #777;
             margin-top: 40px;
             font-size: 15px;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: var(--radius);
-            border: 1px dashed var(--border-color);
+            border: 1px dashed rgba(0,0,0,0.15);
         }
 
         /* Модальные окна */
@@ -320,8 +339,8 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -334,7 +353,7 @@
             opacity: 1;
         }
         .modal {
-            background: var(--bg-color);
+            background: rgba(255, 255, 255, 0.95);
             width: 90%;
             max-width: 400px;
             border-radius: 28px;
@@ -354,20 +373,20 @@
         }
         .modal input, .modal textarea {
             width: 100%;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(0,0,0,0.1);
             border-radius: 16px;
             padding: 14px;
             font-size: 16px;
             margin-bottom: 15px;
             outline: none;
-            background: var(--hover-bg);
+            background: rgba(0,0,0,0.02);
             color: var(--text-color);
             transition: border 0.2s ease;
             -webkit-appearance: none;
         }
         .modal input:focus, .modal textarea:focus {
             border-color: var(--text-color);
-            background: var(--bg-color);
+            background: #fff;
         }
         .modal textarea {
             resize: none;
@@ -379,6 +398,8 @@
             gap: 12px;
             margin-top: 5px;
         }
+        
+        /* Кнопки модалок (левитирующие полупрозрачные) */
         .btn {
             flex: 1;
             padding: 14px;
@@ -387,14 +408,16 @@
             font-size: 16px;
             cursor: pointer;
             font-weight: 600;
+            backdrop-filter: blur(8px);
             transition: background 0.2s ease;
+            animation: levitate 4s ease-in-out infinite alternate;
         }
         .btn-cancel {
-            background: var(--hover-bg);
+            background: rgba(0, 0, 0, 0.05);
             color: var(--text-color);
         }
         .btn-save {
-            background: var(--text-color);
+            background: rgba(0, 0, 0, 0.85);
             color: var(--bg-color);
         }
     </style>
@@ -448,56 +471,58 @@
     </div>
 
     <script>
-        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ НА CANVAS ---
+        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ (CANVAS) ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let ripples = [];
-        let isAnimating = true;
+        let isAnimating = false;
 
-        const spacing = 20; // Расстояние между точками
-        const baseRadius = 1.5; // Базовый размер точки
+        const spacing = 22; // Расстояние между точками сетки
+        const baseRadius = 1.2; // Исходный размер точек
 
         function resizeCanvas() {
             width = window.innerWidth;
             height = window.innerHeight;
-            const dpr = window.devicePixelRatio || 1; // Учет Retina-дисплеев
+            const dpr = window.devicePixelRatio || 1;
             canvas.width = width * dpr;
             canvas.height = height * dpr;
             ctx.scale(dpr, dpr);
-            if (!isAnimating) {
-                isAnimating = true;
-                requestAnimationFrame(drawGrid);
-            }
+            drawGrid(); // Рисуем статичную сетку сразу
         }
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        // Отслеживание кликов и тапов для запуска волны
-        document.addEventListener('pointerdown', (e) => {
+        // Функция создания волны
+        function createRipple(e) {
+            let x = e.clientX;
+            let y = e.clientY;
+            
+            // Поддержка касаний (Touch)
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            }
+
             ripples.push({
-                x: e.clientX,
-                y: e.clientY,
+                x: x,
+                y: y,
                 radius: 0,
-                maxRadius: Math.max(width, height) * 1.5, // Волна уходит за края
-                speed: 12 // Скорость распространения
+                maxRadius: Math.max(width, height) * 1.2,
+                speed: 12
             });
+
             if (!isAnimating) {
                 isAnimating = true;
-                drawGrid();
+                requestAnimationFrame(renderLoop);
             }
-        });
+        }
+
+        // ВАЖНО: Используем capture: true, чтобы перехватить клик ДО того, как кнопки вызовут stopPropagation()
+        document.addEventListener('mousedown', createRipple, true);
+        document.addEventListener('touchstart', createRipple, { passive: true, capture: true });
 
         function drawGrid() {
             ctx.clearRect(0, 0, width, height);
-
-            // Обновляем радиусы волн
-            for (let i = ripples.length - 1; i >= 0; i--) {
-                ripples[i].radius += ripples[i].speed;
-                if (ripples[i].radius > ripples[i].maxRadius) {
-                    ripples.splice(i, 1); // Удаляем волну, если она ушла за экран
-                }
-            }
 
             const cols = Math.ceil(width / spacing);
             const rows = Math.ceil(height / spacing);
@@ -509,23 +534,22 @@
                     
                     let intensity = 0;
                     
+                    // Просчет пересечения точки с активными волнами
                     for (const r of ripples) {
                         const dist = Math.hypot(x - r.x, y - r.y);
                         const diff = Math.abs(dist - r.radius);
-                        const waveWidth = 80; // Ширина кольца волны
+                        const waveWidth = 70; // Ширина кольца волны
                         
                         if (diff < waveWidth) {
-                            // Формула плавного затухания (эффект колокола/волны)
-                            const currentIntensity = (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
-                            intensity += currentIntensity; 
+                            intensity += (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
                         }
                     }
                     
                     intensity = Math.min(1, intensity);
                     
-                    // Вычисляем размер и цвет точки на основе интенсивности волны
+                    // Если волна проходит по точке, увеличиваем радиус и делаем цвет чернее
                     const dotRadius = baseRadius + (intensity * 2.5); 
-                    const alpha = 0.06 + (intensity * 0.8); // До глубокого черного
+                    const alpha = 0.05 + (intensity * 0.8);
                     
                     ctx.beginPath();
                     ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -533,17 +557,32 @@
                     ctx.fill();
                 }
             }
+        }
 
-            // Остановка анимации для экономии ресурсов, если волн нет
+        function renderLoop() {
+            // Обновляем радиусы всех волн
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                ripples[i].radius += ripples[i].speed;
+                if (ripples[i].radius > ripples[i].maxRadius) {
+                    ripples.splice(i, 1);
+                }
+            }
+
+            drawGrid();
+
+            // Если волны еще есть, продолжаем анимацию
             if (ripples.length > 0) {
-                requestAnimationFrame(drawGrid);
+                requestAnimationFrame(renderLoop);
             } else {
                 isAnimating = false;
             }
         }
+        
+        // Инициализация холста
+        resizeCanvas();
 
 
-        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
+        // --- ЛОГИКА ПРИЛОЖЕНИЯ (ДНЕВНИК) ---
         document.addEventListener('DOMContentLoaded', () => {
             let data = JSON.parse(localStorage.getItem('diaryAppData')) || {
                 days: [],
