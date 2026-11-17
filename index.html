@@ -486,15 +486,15 @@
     </div>
 
     <script>
-        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ (МЯГКАЯ И ЕДВА ЗАМЕТНАЯ) ---
+        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ (СВЕРХ-МЯГКАЯ) ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let ripples = [];
         let isAnimating = false;
 
-        const spacing = 22; // Расстояние между точками сетки
-        const baseRadius = 1.2; // Исходный размер точек
+        const spacing = 22; // Расстояние между точками
+        const baseRadius = 1.2; // Базовый размер
 
         function resizeCanvas() {
             width = window.innerWidth;
@@ -503,7 +503,7 @@
             canvas.width = width * dpr;
             canvas.height = height * dpr;
             ctx.scale(dpr, dpr);
-            drawGrid(); // Рисуем статичную сетку
+            drawGrid();
         }
         window.addEventListener('resize', resizeCanvas);
 
@@ -521,7 +521,7 @@
                 y: y,
                 radius: 0,
                 maxRadius: Math.max(width, height) * 1.2,
-                speed: 10
+                speed: 7 // Более плавная и спокойная волна
             });
 
             if (!isAnimating) {
@@ -530,7 +530,6 @@
             }
         }
 
-        // Перехват кликов ДО UI-элементов
         document.addEventListener('mousedown', createRipple, true);
         document.addEventListener('touchstart', createRipple, { passive: true, capture: true });
 
@@ -550,7 +549,7 @@
                     for (const r of ripples) {
                         const dist = Math.hypot(x - r.x, y - r.y);
                         const diff = Math.abs(dist - r.radius);
-                        const waveWidth = 80; 
+                        const waveWidth = 100; // Широкое и мягкое затухание
                         
                         if (diff < waveWidth) {
                             intensity += (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
@@ -559,9 +558,10 @@
                     
                     intensity = Math.min(1, intensity);
                     
-                    // МЕНЕЕ заметная волна: точки почти не растут, цвет становится лишь серым
-                    const dotRadius = baseRadius + (intensity * 0.8); 
-                    const alpha = 0.04 + (intensity * 0.12); // Едва заметный серый пульс
+                    // ЭЛЕГАНТНАЯ МАТЕМАТИКА ЦВЕТА:
+                    // Рост максимум на 0.3 пикселя, прозрачность поднимается с 5% лишь до 9%
+                    const dotRadius = baseRadius + (intensity * 0.3); 
+                    const alpha = 0.05 + (intensity * 0.04);
                     
                     ctx.beginPath();
                     ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
