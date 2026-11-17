@@ -34,20 +34,15 @@
             overflow-x: hidden;
         }
 
-        /* Анимированный плавающий фон */
-        .bg-animation {
+        /* Интерактивный фоновый холст */
+        #bg-canvas {
             position: fixed;
-            top: -20%; left: -20%;
-            width: 140%; height: 140%;
-            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.06' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
-            pointer-events: none;
-            animation: waveZoom 15s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes waveZoom {
-            0% { transform: scale(1) translateZ(0); }
-            100% { transform: scale(1.25) translateZ(0); }
+            pointer-events: none; /* Пропускает клики сквозь себя */
         }
 
         /* Шапка со стеклянным эффектом */
@@ -405,8 +400,9 @@
     </style>
 </head>
 <body>
-    <!-- Анимированный слой с сеткой -->
-    <div class="bg-animation"></div>
+    
+    <!-- Интерактивный фоновый холст для ряби -->
+    <canvas id="bg-canvas"></canvas>
 
     <header id="header-title">Дни</header>
 
@@ -419,7 +415,6 @@
             <div class="sub-tabs-container" id="terms-subtabs"></div>
             <div id="category-management-container"></div>
             
-            <!-- Строка поиска терминов -->
             <div class="search-container" id="terms-search-container">
                 <input type="text" class="search-input" id="terms-search" placeholder="Поиск терминов..." autocomplete="off">
             </div>
@@ -440,7 +435,6 @@
         <button class="nav-btn" data-target="plans-section" data-title="Планы">Планы</button>
     </nav>
 
-    <!-- Модальное окно -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3 id="modal-title">Создать</h3>
@@ -454,6 +448,102 @@
     </div>
 
     <script>
+        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ НА CANVAS ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let ripples = [];
+        let isAnimating = true;
+
+        const spacing = 20; // Расстояние между точками
+        const baseRadius = 1.5; // Базовый размер точки
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            const dpr = window.devicePixelRatio || 1; // Учет Retina-дисплеев
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+            if (!isAnimating) {
+                isAnimating = true;
+                requestAnimationFrame(drawGrid);
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Отслеживание кликов и тапов для запуска волны
+        document.addEventListener('pointerdown', (e) => {
+            ripples.push({
+                x: e.clientX,
+                y: e.clientY,
+                radius: 0,
+                maxRadius: Math.max(width, height) * 1.5, // Волна уходит за края
+                speed: 12 // Скорость распространения
+            });
+            if (!isAnimating) {
+                isAnimating = true;
+                drawGrid();
+            }
+        });
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Обновляем радиусы волн
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                ripples[i].radius += ripples[i].speed;
+                if (ripples[i].radius > ripples[i].maxRadius) {
+                    ripples.splice(i, 1); // Удаляем волну, если она ушла за экран
+                }
+            }
+
+            const cols = Math.ceil(width / spacing);
+            const rows = Math.ceil(height / spacing);
+
+            for (let i = 0; i <= cols; i++) {
+                for (let j = 0; j <= rows; j++) {
+                    const x = i * spacing;
+                    const y = j * spacing;
+                    
+                    let intensity = 0;
+                    
+                    for (const r of ripples) {
+                        const dist = Math.hypot(x - r.x, y - r.y);
+                        const diff = Math.abs(dist - r.radius);
+                        const waveWidth = 80; // Ширина кольца волны
+                        
+                        if (diff < waveWidth) {
+                            // Формула плавного затухания (эффект колокола/волны)
+                            const currentIntensity = (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
+                            intensity += currentIntensity; 
+                        }
+                    }
+                    
+                    intensity = Math.min(1, intensity);
+                    
+                    // Вычисляем размер и цвет точки на основе интенсивности волны
+                    const dotRadius = baseRadius + (intensity * 2.5); 
+                    const alpha = 0.06 + (intensity * 0.8); // До глубокого черного
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+                    ctx.fill();
+                }
+            }
+
+            // Остановка анимации для экономии ресурсов, если волн нет
+            if (ripples.length > 0) {
+                requestAnimationFrame(drawGrid);
+            } else {
+                isAnimating = false;
+            }
+        }
+
+
+        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
         document.addEventListener('DOMContentLoaded', () => {
             let data = JSON.parse(localStorage.getItem('diaryAppData')) || {
                 days: [],
@@ -469,7 +559,6 @@
             let currentSection = 'days-section';
             let activeCategoryId = data.termsCategories.length > 0 ? data.termsCategories[0].id : null;
 
-            // Навигация
             const tabs = document.querySelectorAll('.nav-btn');
             const searchInput = document.getElementById('terms-search');
 
@@ -485,7 +574,7 @@
                     currentSection = tab.dataset.target;
                     
                     if (currentSection !== 'terms-section') {
-                        searchInput.value = ''; // очищаем поиск при уходе со вкладки
+                        searchInput.value = ''; 
                     }
                     render();
                 });
@@ -545,7 +634,6 @@
                 }
             };
 
-            // SVG Иконки
             const iconEdit = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
             const iconDelete = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             const iconChevron = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
@@ -641,17 +729,14 @@
                 itemsArray.forEach(item => container.appendChild(createCard(item, typeStr)));
             }
 
-            // Изолированный рендер списка терминов (для поиска и сортировки)
             function renderTermsListOnly() {
                 if (!activeCategoryId) return;
                 
                 const query = searchInput.value.toLowerCase().trim();
                 let categoryTerms = data.terms.filter(t => t.categoryId === activeCategoryId);
                 
-                // Сортировка по алфавиту
                 categoryTerms.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
                 
-                // Фильтрация по поиску (название и описание)
                 if (query) {
                     categoryTerms = categoryTerms.filter(t => 
                         t.title.toLowerCase().includes(query) || 
@@ -663,7 +748,6 @@
                     query ? 'Ничего не найдено по вашему запросу.' : 'В этой вкладке пока пусто. Нажми +, чтобы добавить.');
             }
 
-            // Слушатель для мгновенного поиска
             searchInput.addEventListener('input', renderTermsListOnly);
 
             function render() {
@@ -700,7 +784,7 @@
                         btn.innerText = cat.title;
                         btn.onclick = () => {
                             activeCategoryId = cat.id;
-                            searchInput.value = ''; // сброс поиска при смене вкладки
+                            searchInput.value = ''; 
                             render();
                         };
                         subtabs.appendChild(btn);
