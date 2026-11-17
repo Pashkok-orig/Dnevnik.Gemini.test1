@@ -2,14 +2,24 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Дневник</title>
     
+    <!-- Настройки для iOS PWA (Полноэкранный режим без Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Дневник">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#F7F6F2">
+
+    <!-- Иконка для браузера -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23F7F6F2'/%3E%3Cpath d='M150 180v180c0 20 15 35 35 35h180c10 0 15-5 15-15V150c0-10-5-15-15-15H185c-20 0-35 15-35 35z' fill='none' stroke='%23000000' stroke-width='16' stroke-linejoin='round'/%3E%3Cpath d='M185 135c-20 0-35 15-35 35v180c0 20 15 35 35 35' fill='none' stroke='%23000000' stroke-width='8'/%3E%3Cpath d='M130 185h20M130 245h20M130 305h20M130 365h20' stroke='%23000000' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M200 210c40-15 80-15 120 0s80 15 120 0M180 260c45-15 90-15 135 0s90 15 135 0M170 310c45-15 90-15 135 0s90 15 135 0' fill='none' stroke='%23000000' stroke-width='6' stroke-linecap='round' opacity='0.7'/%3E%3Ccircle cx='215' cy='165' r='3' fill='%23000000'/%3E%3Ccircle cx='245' cy='185' r='2' fill='%23000000'/%3E%3Ccircle cx='345' cy='285' r='2' fill='%23000000'/%3E%3Ccircle cx='375' cy='245' r='3' fill='%23000000'/%3E%3C/svg%3E">
     
+    <!-- Иконка для экрана ДОМОЙ на iPhone/iOS -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23F7F6F2'/%3E%3Cpath d='M150 180v180c0 20 15 35 35 35h180c10 0 15-5 15-15V150c0-10-5-15-15-15H185c-20 0-35 15-35 35z' fill='none' stroke='%23000000' stroke-width='16' stroke-linejoin='round'/%3E%3Cpath d='M185 135c-20 0-35 15-35 35v180c0 20 15 35 35 35' fill='none' stroke='%23000000' stroke-width='8'/%3E%3Cpath d='M130 185h20M130 245h20M130 305h20M130 365h20' stroke='%23000000' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M200 210c40-15 80-15 120 0s80 15 120 0M180 260c45-15 90-15 135 0s90 15 135 0M170 310c45-15 90-15 135 0s90 15 135 0' fill='none' stroke='%23000000' stroke-width='6' stroke-linecap='round' opacity='0.7'/%3E%3Ccircle cx='215' cy='165' r='3' fill='%23000000'/%3E%3Ccircle cx='245' cy='185' r='2' fill='%23000000'/%3E%3Ccircle cx='345' cy='285' r='2' fill='%23000000'/%3E%3Ccircle cx='375' cy='245' r='3' fill='%23000000'/%3E%3C/svg%3E">
+
     <style>
         :root {
-            /* Заменен холодный белый на молочный оттенок */
             --bg-color: #F7F6F2; 
             --text-color: #000000;
             --border-color: rgba(0, 0, 0, 0.06);
@@ -28,10 +38,9 @@
         }
 
         body {
-            /* Заменен базовый фон на молочный */
             background-color: #F7F6F2;
             color: var(--text-color);
-            padding-top: 75px;
+            padding-top: env(safe-area-inset-top, 75px);
             padding-bottom: 95px;
             display: flex;
             flex-direction: column;
@@ -43,7 +52,7 @@
         #splash-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: #F7F6F2; /* Заменен фон на молочный */
+            background: #F7F6F2; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -105,12 +114,13 @@
         header {
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 70px;
+            height: calc(70px + env(safe-area-inset-top, 0px));
+            padding-top: env(safe-area-inset-top, 0px);
             display: flex;
             align-items: center;
             justify-content: center;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(247, 246, 242, 0.6); /* Полупрозрачный молочный */
+            background: rgba(247, 246, 242, 0.6); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
@@ -133,6 +143,8 @@
         .header-btn {
             position: absolute;
             left: 15px;
+            top: calc(50% + env(safe-area-inset-top, 0px)/2);
+            transform: translateY(-50%);
             background: none;
             border: none;
             color: var(--text-color);
@@ -146,7 +158,7 @@
         }
         .header-btn:active {
             background: var(--hover-bg);
-            transform: scale(0.9);
+            transform: translateY(-50%) scale(0.9);
         }
 
         nav {
@@ -157,7 +169,7 @@
             padding: 12px 10px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid var(--border-color);
-            background: rgba(247, 246, 242, 0.6); /* Полупрозрачный молочный */
+            background: rgba(247, 246, 242, 0.6); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
@@ -168,6 +180,7 @@
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
+            margin-top: env(safe-area-inset-top, 0px);
         }
 
         .nav-btn {
@@ -435,7 +448,7 @@
             opacity: 1;
         }
         .modal {
-            background: rgba(247, 246, 242, 0.85); /* Молочный с полупрозрачностью */
+            background: rgba(247, 246, 242, 0.85);
             backdrop-filter: blur(25px);
             border: 1px solid rgba(255,255,255,0.4);
             width: 90%;
@@ -525,7 +538,6 @@
 </head>
 <body>
     
-    <!-- Splash Screen приветствия при запуске -->
     <div id="splash-screen">
         <svg class="splash-logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
             <rect width="512" height="512" rx="120" fill="#F7F6F2" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.04))"/>
@@ -586,7 +598,6 @@
         <button class="nav-btn" data-target="plans-section" data-title="Планы">Планы</button>
     </nav>
 
-    <!-- Основное модальное окно -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3 id="modal-title">Создать</h3>
@@ -599,7 +610,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно резервного копирования -->
     <div class="modal-overlay" id="backup-modal">
         <div class="modal">
             <h3>Резервная копия</h3>
@@ -613,7 +623,6 @@
     </div>
 
     <script>
-        // --- ЛОГИКА ФОНОВОЙ ВОЛНЫ ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -707,10 +716,7 @@
         }
         resizeCanvas();
 
-
-        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Эмуляция Splash-Screen на старте
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 splash.classList.add('hidden');
