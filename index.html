@@ -92,9 +92,9 @@
             pointer-events: none;
         }
 
-        /* Аппаратное ускорение для элементов, управляемых JS */
+        /* Аппаратное ускорение для плавности физики волны */
         .card, .sub-tab, .search-container, .fab, .empty-state {
-            will-change: transform;
+            will-change: transform, box-shadow;
         }
 
         header {
@@ -143,6 +143,7 @@
         }
         .header-btn:active {
             background: var(--hover-bg);
+            transform: translateY(-50%) scale(0.9);
         }
 
         nav {
@@ -184,7 +185,6 @@
             background: var(--hover-bg);
         }
 
-        /* !important перекрывает JS-трансформации волны во время нажатия */
         .nav-btn:active, .btn:active, .action-btn:active, .sub-tab:active {
             transform: scale(0.95) !important;
         }
@@ -320,7 +320,7 @@
             font-size: 15px;
             line-height: 1.5;
         }
-
+        
         .card-text p, .card-text div {
             margin: 0; 
             padding: 0;
@@ -507,6 +507,7 @@
 </head>
 <body>
     
+    <!-- Splash Screen приветствия -->
     <div id="splash-screen">
         <svg class="splash-logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
             <rect width="512" height="512" rx="120" fill="#F7F6F2" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.04))"/>
@@ -522,6 +523,7 @@
         <div class="splash-title">ДНЕВНИК</div>
     </div>
 
+    <!-- Холст для математической визуализации волны -->
     <canvas id="bg-canvas"></canvas>
 
     <header>
@@ -567,7 +569,7 @@
         <button class="nav-btn" data-target="plans-section" data-title="Планы">Планы</button>
     </nav>
 
-    <!-- Основное модальное окно -->
+    <!-- Модалки -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3 id="modal-title">Создать</h3>
@@ -580,7 +582,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно резервного копирования -->
     <div class="modal-overlay" id="backup-modal">
         <div class="modal">
             <h3>Резервная копия</h3>
@@ -594,7 +595,7 @@
     </div>
 
     <script>
-        // --- МАТЕМАТИКА АВТОМАТИЧЕСКОЙ ВОЛНЫ И ФИЗИКИ ИНТЕРФЕЙСА ---
+        // --- МАТЕМАТИКА АВТОМАТИЧЕСКОЙ ЛИНЕЙНОЙ (ПРЯМОЙ) ВОЛНЫ ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -614,27 +615,26 @@
         window.addEventListener('resize', resizeCanvas);
 
         function renderLoop() {
-            time += 0.015; 
+            time += 0.03; // Скорость течения волны
             
             ctx.clearRect(0, 0, width, height);
             const cols = Math.ceil(width / spacing);
             const rows = Math.ceil(height / spacing);
-            
-            // Точка исхода волны: правый нижний угол
-            const originX = width;
-            const originY = height;
 
             for (let i = 0; i <= cols; i++) {
                 for (let j = 0; j <= rows; j++) {
                     const x = i * spacing;
                     const y = j * spacing;
                     
-                    // Вычисляем расстояние от правого нижнего угла
-                    const dist = Math.hypot(x - originX, y - originY);
-                    const wave = (Math.sin(dist * 0.006 - time) + 1) / 2;
+                    // Математика ПРЯМОЙ диагональной линии (из правого нижнего в левый верхний)
+                    const dist = (width - x) + (height - y);
                     
-                    const dotRadius = baseRadius + (wave * 0.4); 
-                    const alpha = 0.04 + (wave * 0.05);
+                    // Math.pow(..., 4) сужает гребень волны, делая её более "четкой" и выразительной полосой
+                    const waveRaw = (Math.sin(dist * 0.004 - time) + 1) / 2;
+                    const wave = Math.pow(waveRaw, 4); 
+                    
+                    const dotRadius = baseRadius + (wave * 0.9); // Точки заметно вырастают на гребне
+                    const alpha = 0.04 + (wave * 0.15); // И становятся темнее
                     
                     ctx.beginPath();
                     ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -643,7 +643,7 @@
                 }
             }
 
-            // --- Физика взаимодействия диагональной волны с UI-элементами ---
+            // --- Физика взаимодействия прямой волны с UI-элементами ---
             const reactives = document.querySelectorAll('.card, .sub-tab, .search-container, .empty-state');
             
             reactives.forEach(el => {
@@ -652,12 +652,14 @@
                 
                 const elX = rect.left + rect.width / 2;
                 const elY = rect.top + rect.height / 2;
-                // Дистанция элемента от правого нижнего угла
-                const dist = Math.hypot(elX - originX, elY - originY);
                 
-                const wave = (Math.sin(dist * 0.006 - time) + 1) / 2;
+                // Та же самая линейная математика для интерфейса
+                const dist = (width - elX) + (height - elY);
                 
-                const lift = wave * 6; 
+                const waveRaw = (Math.sin(dist * 0.004 - time) + 1) / 2;
+                const wave = Math.pow(waveRaw, 4);
+                
+                const lift = wave * 8; // Плавный подъем на 8 пикселей
                 el.style.transform = `translateY(-${lift}px)`;
             });
 
@@ -666,14 +668,15 @@
                 const rect = fab.getBoundingClientRect();
                 const elX = rect.left + rect.width / 2;
                 const elY = rect.top + rect.height / 2;
-                const dist = Math.hypot(elX - originX, elY - originY);
-                const wave = (Math.sin(dist * 0.006 - time) + 1) / 2;
+                const dist = (width - elX) + (height - elY);
+                const waveRaw = (Math.sin(dist * 0.004 - time) + 1) / 2;
+                const wave = Math.pow(waveRaw, 4);
                 
-                const lift = wave * 6;
-                const shadowBlur = 15 + (wave * 10);
+                const lift = wave * 8;
+                const shadowBlur = 15 + (wave * 12);
                 
                 fab.style.transform = `translateY(-${lift}px)`;
-                fab.style.boxShadow = `0 ${4 + wave * 4}px ${shadowBlur}px rgba(0,0,0,0.15)`;
+                fab.style.boxShadow = `0 ${4 + wave * 6}px ${shadowBlur}px rgba(0,0,0,0.15)`;
             }
 
             requestAnimationFrame(renderLoop);
@@ -681,6 +684,7 @@
         
         resizeCanvas();
         requestAnimationFrame(renderLoop);
+
 
         // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
         document.addEventListener('DOMContentLoaded', () => {
