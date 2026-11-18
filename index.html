@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Дневник</title>
     
-    <!-- Настройки для iOS PWA (Полноэкранный режим без Safari) -->
+    <!-- Настройки для iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Дневник">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#F7F6F2">
 
-    <!-- Иконка для браузера -->
+    <!-- Иконка браузера -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23F7F6F2'/%3E%3Cpath d='M150 180v180c0 20 15 35 35 35h180c10 0 15-5 15-15V150c0-10-5-15-15-15H185c-20 0-35 15-35 35z' fill='none' stroke='%23000000' stroke-width='16' stroke-linejoin='round'/%3E%3Cpath d='M185 135c-20 0-35 15-35 35v180c0 20 15 35 35 35' fill='none' stroke='%23000000' stroke-width='8'/%3E%3Cpath d='M130 185h20M130 245h20M130 305h20M130 365h20' stroke='%23000000' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M200 210c40-15 80-15 120 0s80 15 120 0M180 260c45-15 90-15 135 0s90 15 135 0M170 310c45-15 90-15 135 0s90 15 135 0' fill='none' stroke='%23000000' stroke-width='6' stroke-linecap='round' opacity='0.7'/%3E%3Ccircle cx='215' cy='165' r='3' fill='%23000000'/%3E%3Ccircle cx='245' cy='185' r='2' fill='%23000000'/%3E%3Ccircle cx='345' cy='285' r='2' fill='%23000000'/%3E%3Ccircle cx='375' cy='245' r='3' fill='%23000000'/%3E%3C/svg%3E">
-    
-    <!-- Иконка для экрана ДОМОЙ на iPhone/iOS -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23F7F6F2'/%3E%3Cpath d='M150 180v180c0 20 15 35 35 35h180c10 0 15-5 15-15V150c0-10-5-15-15-15H185c-20 0-35 15-35 35z' fill='none' stroke='%23000000' stroke-width='16' stroke-linejoin='round'/%3E%3Cpath d='M185 135c-20 0-35 15-35 35v180c0 20 15 35 35 35' fill='none' stroke='%23000000' stroke-width='8'/%3E%3Cpath d='M130 185h20M130 245h20M130 305h20M130 365h20' stroke='%23000000' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M200 210c40-15 80-15 120 0s80 15 120 0M180 260c45-15 90-15 135 0s90 15 135 0M170 310c45-15 90-15 135 0s90 15 135 0' fill='none' stroke='%23000000' stroke-width='6' stroke-linecap='round' opacity='0.7'/%3E%3Ccircle cx='215' cy='165' r='3' fill='%23000000'/%3E%3Ccircle cx='245' cy='185' r='2' fill='%23000000'/%3E%3Ccircle cx='345' cy='285' r='2' fill='%23000000'/%3E%3Ccircle cx='375' cy='245' r='3' fill='%23000000'/%3E%3C/svg%3E">
+    <!-- Иконки экрана Домой -->
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon.png">
 
     <style>
         :root {
@@ -48,7 +50,7 @@
             overflow-x: hidden;
         }
 
-        /* Анимированный Splash-Screen (Запуск) */
+        /* Splash Screen */
         #splash-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -60,31 +62,22 @@
             z-index: 9999;
             transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        #splash-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
+        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+        
         .splash-logo {
-            width: 120px;
-            height: 120px;
+            width: 120px; height: 120px;
             margin-bottom: 20px;
             animation: pulse-logo 2.5s infinite alternate ease-in-out;
         }
-
         @keyframes pulse-logo {
             0% { transform: scale(1) translateY(0); opacity: 0.95; }
             100% { transform: scale(1.05) translateY(-5px); opacity: 1; }
         }
 
         .splash-title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-size: 24px; font-weight: 700; letter-spacing: 2px;
             animation: fadeInText 1.5s ease-out;
         }
-
         @keyframes fadeInText {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -99,16 +92,9 @@
             pointer-events: none;
         }
 
-        @keyframes levitate {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
-            100% { transform: translateY(0px); }
-        }
-
-        @keyframes levitate-fab {
-            0% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-            50% { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(0,0,0,0.25); }
-            100% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        /* Аппаратное ускорение для элементов, управляемых JS */
+        .card, .sub-tab, .search-container, .fab, .empty-state {
+            will-change: transform;
         }
 
         header {
@@ -120,7 +106,7 @@
             align-items: center;
             justify-content: center;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(247, 246, 242, 0.6); 
+            background: rgba(247, 246, 242, 0.65); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
@@ -139,7 +125,6 @@
             height: 28px;
         }
 
-        /* Кнопка настроек/бэкапа в шапке */
         .header-btn {
             position: absolute;
             left: 15px;
@@ -158,7 +143,6 @@
         }
         .header-btn:active {
             background: var(--hover-bg);
-            transform: translateY(-50%) scale(0.9);
         }
 
         nav {
@@ -169,7 +153,7 @@
             padding: 12px 10px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid var(--border-color);
-            background: rgba(247, 246, 242, 0.6); 
+            background: rgba(247, 246, 242, 0.65); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
@@ -200,12 +184,11 @@
             background: var(--hover-bg);
         }
 
+        /* !important перекрывает JS-трансформации волны во время нажатия */
         .nav-btn:active, .btn:active, .action-btn:active, .sub-tab:active {
-            animation: none !important;
             transform: scale(0.95) !important;
         }
         .fab:active {
-            animation: none !important;
             transform: scale(0.85) !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         }
@@ -227,7 +210,6 @@
         .search-container {
             margin-bottom: 16px;
             display: none;
-            animation: levitate 3.5s ease-in-out infinite alternate 0.5s;
         }
 
         .search-input {
@@ -261,13 +243,6 @@
             backdrop-filter: blur(16px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
             word-wrap: break-word;
-        }
-        
-        .card:nth-child(odd) {
-            animation: levitate 4.2s ease-in-out infinite alternate;
-        }
-        .card:nth-child(even) {
-            animation: levitate 3.8s ease-in-out infinite alternate 1s;
         }
 
         .card-header {
@@ -368,9 +343,8 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s ease;
             z-index: 999;
-            animation: levitate-fab 4s ease-in-out infinite alternate;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         .sub-tabs-container {
@@ -394,10 +368,6 @@
             font-size: 15px;
             font-weight: 500;
             transition: all 0.2s ease;
-            animation: levitate 3s ease-in-out infinite alternate;
-        }
-        .sub-tab:nth-child(even) {
-            animation-delay: 0.5s;
         }
         .sub-tab.active {
             background: rgba(0, 0, 0, 0.75);
@@ -428,7 +398,6 @@
             padding: 20px;
             border-radius: var(--radius);
             border: 1px dashed rgba(0,0,0,0.1);
-            animation: levitate 4s ease-in-out infinite alternate 0.2s;
         }
 
         .modal-overlay {
@@ -598,6 +567,7 @@
         <button class="nav-btn" data-target="plans-section" data-title="Планы">Планы</button>
     </nav>
 
+    <!-- Основное модальное окно -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3 id="modal-title">Создать</h3>
@@ -610,6 +580,7 @@
         </div>
     </div>
 
+    <!-- Модальное окно резервного копирования -->
     <div class="modal-overlay" id="backup-modal">
         <div class="modal">
             <h3>Резервная копия</h3>
@@ -623,13 +594,13 @@
     </div>
 
     <script>
+        // --- МАТЕМАТИКА АВТОМАТИЧЕСКОЙ ВОЛНЫ И ФИЗИКИ ИНТЕРФЕЙСА ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
-        let ripples = [];
-        let isAnimating = false;
+        let time = 0; 
 
-        const spacing = 22; 
+        const spacing = 24; 
         const baseRadius = 1.2; 
 
         function resizeCanvas() {
@@ -639,58 +610,31 @@
             canvas.width = width * dpr;
             canvas.height = height * dpr;
             ctx.scale(dpr, dpr);
-            drawGrid();
         }
         window.addEventListener('resize', resizeCanvas);
 
-        function createRipple(e) {
-            let x = e.clientX;
-            let y = e.clientY;
+        function renderLoop() {
+            time += 0.015; 
             
-            if (e.touches && e.touches.length > 0) {
-                x = e.touches[0].clientX;
-                y = e.touches[0].clientY;
-            }
-
-            ripples.push({
-                x: x, y: y, radius: 0,
-                maxRadius: Math.max(width, height) * 1.2,
-                speed: 7 
-            });
-
-            if (!isAnimating) {
-                isAnimating = true;
-                requestAnimationFrame(renderLoop);
-            }
-        }
-
-        document.addEventListener('mousedown', createRipple, true);
-        document.addEventListener('touchstart', createRipple, { passive: true, capture: true });
-
-        function drawGrid() {
             ctx.clearRect(0, 0, width, height);
             const cols = Math.ceil(width / spacing);
             const rows = Math.ceil(height / spacing);
+            
+            // Точка исхода волны: правый нижний угол
+            const originX = width;
+            const originY = height;
 
             for (let i = 0; i <= cols; i++) {
                 for (let j = 0; j <= rows; j++) {
                     const x = i * spacing;
                     const y = j * spacing;
-                    let intensity = 0;
                     
-                    for (const r of ripples) {
-                        const dist = Math.hypot(x - r.x, y - r.y);
-                        const diff = Math.abs(dist - r.radius);
-                        const waveWidth = 100; 
-                        
-                        if (diff < waveWidth) {
-                            intensity += (Math.cos(Math.PI * (diff / waveWidth)) + 1) / 2;
-                        }
-                    }
+                    // Вычисляем расстояние от правого нижнего угла
+                    const dist = Math.hypot(x - originX, y - originY);
+                    const wave = (Math.sin(dist * 0.006 - time) + 1) / 2;
                     
-                    intensity = Math.min(1, intensity);
-                    const dotRadius = baseRadius + (intensity * 0.3); 
-                    const alpha = 0.05 + (intensity * 0.04);
+                    const dotRadius = baseRadius + (wave * 0.4); 
+                    const alpha = 0.04 + (wave * 0.05);
                     
                     ctx.beginPath();
                     ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -698,24 +642,47 @@
                     ctx.fill();
                 }
             }
-        }
 
-        function renderLoop() {
-            for (let i = ripples.length - 1; i >= 0; i--) {
-                ripples[i].radius += ripples[i].speed;
-                if (ripples[i].radius > ripples[i].maxRadius) {
-                    ripples.splice(i, 1);
-                }
+            // --- Физика взаимодействия диагональной волны с UI-элементами ---
+            const reactives = document.querySelectorAll('.card, .sub-tab, .search-container, .empty-state');
+            
+            reactives.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.width === 0 && rect.height === 0) return; 
+                
+                const elX = rect.left + rect.width / 2;
+                const elY = rect.top + rect.height / 2;
+                // Дистанция элемента от правого нижнего угла
+                const dist = Math.hypot(elX - originX, elY - originY);
+                
+                const wave = (Math.sin(dist * 0.006 - time) + 1) / 2;
+                
+                const lift = wave * 6; 
+                el.style.transform = `translateY(-${lift}px)`;
+            });
+
+            const fab = document.querySelector('.fab');
+            if (fab) {
+                const rect = fab.getBoundingClientRect();
+                const elX = rect.left + rect.width / 2;
+                const elY = rect.top + rect.height / 2;
+                const dist = Math.hypot(elX - originX, elY - originY);
+                const wave = (Math.sin(dist * 0.006 - time) + 1) / 2;
+                
+                const lift = wave * 6;
+                const shadowBlur = 15 + (wave * 10);
+                
+                fab.style.transform = `translateY(-${lift}px)`;
+                fab.style.boxShadow = `0 ${4 + wave * 4}px ${shadowBlur}px rgba(0,0,0,0.15)`;
             }
-            drawGrid();
-            if (ripples.length > 0) {
-                requestAnimationFrame(renderLoop);
-            } else {
-                isAnimating = false;
-            }
+
+            requestAnimationFrame(renderLoop);
         }
+        
         resizeCanvas();
+        requestAnimationFrame(renderLoop);
 
+        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -791,7 +758,7 @@
             document.getElementById('fab-btn').onclick = () => {
                 if (currentSection === 'days-section') {
                     openModal('Новый день', false, getTodayString(), '', (title, desc) => {
-                        data.days.unshift({ id: Date.now(), title, desc, isOpen: true });
+                        data.days.push({ id: Date.now(), title, desc, isOpen: true });
                         saveData(); render();
                     });
                 } else if (currentSection === 'terms-section') {
@@ -800,12 +767,12 @@
                         return;
                     }
                     openModal('Новый термин', false, '', '', (title, desc) => {
-                        data.terms.unshift({ id: Date.now(), categoryId: activeCategoryId, title, desc, isOpen: true });
+                        data.terms.push({ id: Date.now(), categoryId: activeCategoryId, title, desc, isOpen: true });
                         saveData(); renderTermsListOnly();
                     });
                 } else if (currentSection === 'plans-section') {
                     openModal('Новый план', false, '', '', (title, desc) => {
-                        data.plans.unshift({ id: Date.now(), title, desc, isOpen: true });
+                        data.plans.push({ id: Date.now(), title, desc, isOpen: true });
                         saveData(); render();
                     });
                 }
@@ -837,9 +804,21 @@
 
                 if (importedJson.days) {
                     importedJson.days.forEach(d => {
+                        let dateStr = d.title || '';
+                        if (!dateStr && (d.date || d.created)) {
+                            try {
+                                let dateObj = d.date ? new Date(d.date) : new Date(d.created);
+                                if (!isNaN(dateObj)) {
+                                    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+                                    let formatted = new Intl.DateTimeFormat('ru-RU', options).format(dateObj);
+                                    dateStr = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+                                }
+                            } catch(e) { dateStr = d.date; }
+                        }
+
                         newData.days.push({
                             id: d.id || Date.now() + Math.random(),
-                            title: d.title || d.date || 'Без даты',
+                            title: dateStr || 'Без даты',
                             desc: (d.content || d.desc || '').replace(/<[^>]*>?/gm, '\n').trim(),
                             isOpen: d.isOpen || false 
                         });
@@ -894,7 +873,7 @@
                         activeCategoryId = data.termsCategories.length > 0 ? data.termsCategories[0].id : null;
                         render();
                         backupModal.classList.remove('active');
-                        alert('Данные успешно загружены!');
+                        alert('Данные успешно загружены! Даты преобразованы.');
                     } catch (err) {
                         alert('Ошибка при чтении файла бэкапа.');
                     }
